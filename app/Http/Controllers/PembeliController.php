@@ -35,28 +35,33 @@ class PembeliController extends Controller
             'tanggal_lahir' => ['required', 'string'],
             'jenis_kelamin' => ['required', 'string'],
             'alamat' => ['required', 'string'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Rules\Password::defaults(),],
+            'ktp' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
+        $user = new User();
+        $user->name = $request->input('nama');
+        $user->username = $request->input('user');
+        $user->password = Hash::make($request->input('password'));
+        $user->jenis_kelamin = $request->input('jenis_kelamin');
+        $user->role = "pembeli";
+        $user->save();
+
+        if ($request->hasFile('ktp')) {
+            $ktp = $request->file('ktp')->store('public/ktp');
+        }
+
         $data = new Pembeli();
+        $data->id = $user->id;
         $data->nama = $request->input('nama');
         $data->tempat_lahir = $request->input('tempat_lahir');
         $data->tanggal_lahir = $request->input('tanggal_lahir');
         $data->jenis_kelamin = $request->input('jenis_kelamin');
         $data->alamat = $request->input('alamat');
         $data->user = $request->input('user');
-        $data->foto_ktp = "";
+        $data->foto_ktp = $ktp;
         $data->password = Hash::make($request->input('password'));
         $data->save();
-
-        $user = new User();
-        $user->id = $data->id;
-        $user->name = $data->nama;
-        $user->username = $data->user;
-        $user->password = $data->password;
-        $user->jenis_kelamin = $data->jenis_kelamin;
-        $user->role = "pembeli";
-        $user->save();
 
         return redirect()->route('pembeli.list');
     }
@@ -84,12 +89,17 @@ class PembeliController extends Controller
             'tanggal_lahir' => ['required', 'string'],
             'jenis_kelamin' => ['required', 'string'],
             'alamat' => ['required', 'string'],
+            'ktp' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         if ($request->input('password') != "") {
             $request->validate([
                 'password' => ['confirmed', Rules\Password::defaults()],
             ]);
+        }
+
+        if ($request->hasFile('ktp')) {
+            $ktp = $request->file('ktp')->store('public/ktp');
         }
 
         $data = Pembeli::findOrFail($id);
@@ -99,7 +109,7 @@ class PembeliController extends Controller
         $data->jenis_kelamin = $request->input('jenis_kelamin');
         $data->alamat = $request->input('alamat');
         $data->user = $request->input('user');
-        $data->foto_ktp = "";
+        $data->foto_ktp = $ktp;
 
         if ($request->input('password') != "") {
             $data->password = Hash::make($request->input('password'));

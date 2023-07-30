@@ -23,12 +23,12 @@ Follow these instructions to get the project up and running on your local machin
 1. Clone the repository:
 
    ```shell
-   git clone https://github.com/binus-web-programming-TQCA/tk3.git
+   git clone https://github.com/binus-web-programming-TQCA/tk3-tk4.git
 
 2. Navigate to the project directory:
 
     ```shell
-   cd tk3
+   cd tk3-tk4
 
 3. Install PHP dependencies:
 
